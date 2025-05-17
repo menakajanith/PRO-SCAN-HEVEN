@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables
-REPO_URL="https://raw.githubusercontent.com/your-username/pro-scan-heven/main"
+REPO_URL="https://raw.githubusercontent.com/menakajanith/PRO-SCAN-HEVEN/main"
 SCRIPT_NAME="pro_scan_heven.py"
 REQUIREMENTS="requirements.txt"
 WORKDIR="$HOME/pro-scan-heven"
@@ -48,7 +48,7 @@ if [ -d ".git" ]; then
     git pull origin main
 else
     echo -e "${YELLOW}Cloning repository...${NC}"
-    git clone https://github.com/your-username/pro-scan-heven.git .
+    git clone https://github.com/menakajanith/PRO-SCAN-HEVEN.git .
 fi
 
 # Download script and requirements if git fails
@@ -77,6 +77,9 @@ if ! command_exists nmap; then
     echo -e "${YELLOW}Installing nmap...${NC}"
     pkg install nmap || sudo apt-get install nmap -y || sudo yum install nmap -y
 fi
+
+# Port scanning warning
+echo -e "${YELLOW}Warning: Unauthorized port scanning may violate laws or terms of service. Ensure you have permission.${NC}"
 
 # Run the script
 echo -e "${GREEN}Running PRO SCAN HEVEN Tool...${NC}"
