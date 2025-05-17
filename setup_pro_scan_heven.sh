@@ -39,6 +39,12 @@ install_package() {
     fi
 }
 
+# Update Termux package lists
+if command_exists pkg; then
+    echo -e "${YELLOW}Updating Termux package lists...${NC}"
+    pkg update -y && pkg upgrade -y
+fi
+
 # Check and install curl
 if ! command_exists curl; then
     echo -e "${RED}Error: curl is not installed.${NC}"
@@ -54,19 +60,19 @@ fi
 # Check and install Python
 if ! command_exists "$PYTHON"; then
     echo -e "${RED}Error: Python3 is not installed.${NC}"
-    install_package python3
-fi
-
-# Check and install pip
-if ! command_exists "$PIP"; then
-    echo -e "${YELLOW}Installing pip...${NC}"
-    curl -s https://bootstrap.pypa.io/get-pip.py | "$PYTHON"
+    install_package python
 fi
 
 # Check and install nmap
 if ! command_exists nmap; then
     echo -e "${RED}Error: nmap is not installed.${NC}"
     install_package nmap
+fi
+
+# Avoid pip upgrade in Termux to prevent conflicts
+if command_exists pkg; then
+    echo -e "${YELLOW}Ensuring pip is installed in Termux...${NC}"
+    pkg install python-pip -y
 fi
 
 # Create working directory
@@ -98,9 +104,14 @@ if [ ! -f "$SCRIPT_NAME" ] || [ ! -f "$REQUIREMENTS" ]; then
     exit 1
 fi
 
+# Verify requirements.txt is valid
+if ! grep -qE '^[a-zA-Z0-9_-]+' "$REQUIREMENTS"; then
+    echo -e "${RED}Error: requirements.txt is invalid or contains 404 error content${NC}"
+    exit 1
+fi
+
 # Install Python dependencies
 echo -e "${YELLOW}Installing Python dependencies...${NC}"
-"$PIP" install --upgrade pip
 "$PIP" install -r "$REQUIREMENTS" || { echo -e "${RED}Failed to install dependencies${NC}"; exit 1; }
 
 # Port scanning warning
