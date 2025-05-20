@@ -31,30 +31,28 @@ cd $HOME
 python -m venv pro_scan_venv || { echo -e "${RED}Failed to create virtual environment.${NC}"; exit 1; }
 source pro_scan_venv/bin/activate || { echo -e "${RED}Failed to activate virtual environment.${NC}"; exit 1; }
 
+# Clone the repository
+echo -e "${GREEN}Cloning repository...${NC}"
+[ -d "PRO-SCAN-HEVEN" ] && { echo -e "${RED}Removing old PRO-SCAN-HEVEN directory...${NC}"; rm -rf PRO-SCAN-HEVEN; }
+git clone https://github.com/menakajanith/PRO-SCAN-HEVEN.git || { echo -e "${RED}Failed to clone repository.${NC}"; exit 1; }
+cd PRO-SCAN-HEVEN
+
 # Install Python dependencies from requirements.txt
 echo -e "${GREEN}Installing Python libraries from requirements.txt...${NC}"
-cd $HOME/PRO-SCAN-HEVEN
 if [ -f requirements.txt ]; then
     pip install --no-warn-script-location -r requirements.txt || {
         echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
         pip install --upgrade pip
-        pip install --no-warn-script-location -r requirements.txt || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
+        pip install --no-warn-script-location -r requirements.txt || { echo -e "${RED}Failed to install Python libraries from requirements.txt.${NC}"; exit 1; }
     }
 else
-    echo -e "${RED}requirements.txt not found! Installing dependencies directly...${NC}"
+    echo -e "${YELLOW}requirements.txt not found! Installing dependencies directly...${NC}"
     pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography==43.0.3 rich websocket-client dnspython || {
         echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
         pip install --upgrade pip
         pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography==43.0.3 rich websocket-client dnspython || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
     }
 fi
-
-# Clone the repository
-echo -e "${GREEN}Cloning repository...${NC}"
-cd $HOME
-[ -d "PRO-SCAN-HEVEN" ] && { echo -e "${RED}Removing old PRO-SCAN-HEVEN directory...${NC}"; rm -rf PRO-SCAN-HEVEN; }
-git clone https://github.com/menakajanith/PRO-SCAN-HEVEN.git || { echo -e "${RED}Failed to clone repository.${NC}"; exit 1; }
-cd PRO-SCAN-HEVEN
 
 # Run the tool
 echo -e "${GREEN}Running PRO SCAN HEVEN Tool...${NC}"
