@@ -3,6 +3,7 @@
 # Colors for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}Starting setup for PRO SCAN HEVEN Tool...${NC}"
@@ -16,7 +17,12 @@ fi
 # Update Termux and install basic packages
 echo -e "${GREEN}Installing basic packages...${NC}"
 pkg update -y && pkg upgrade -y
-pkg install python git nmap tsu -y || { echo -e "${RED}Failed to install packages. Check package manager.${NC}"; exit 1; }
+pkg install python git nmap tsu rust -y || { echo -e "${RED}Failed to install packages. Check package manager.${NC}"; exit 1; }
+
+# Set up Rust environment
+echo -e "${GREEN}Setting up Rust environment...${NC}"
+export CARGO_BUILD_TARGET=$(rustc --print target-triple)
+source $HOME/.cargo/env 2>/dev/null || echo -e "${YELLOW}Rust environment not found, continuing...${NC}"
 
 # Install Python dependencies
 echo -e "${GREEN}Installing Python libraries...${NC}"
