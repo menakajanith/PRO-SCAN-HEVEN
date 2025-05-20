@@ -1,8 +1,0 @@
-requests
-dnspython
-python-nmap
-beautifulsoup4
-reportlab
-cryptography
-rich
-websocket-client
