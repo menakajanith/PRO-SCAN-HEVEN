@@ -24,13 +24,22 @@ echo -e "${GREEN}Setting up Rust environment...${NC}"
 export CARGO_BUILD_TARGET=$(rustc --print target-triple)
 source $HOME/.cargo/env 2>/dev/null || echo -e "${YELLOW}Rust environment not found, continuing...${NC}"
 
-# Install Python dependencies
-echo -e "${GREEN}Installing Python libraries...${NC}"
-pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || {
-    echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
-    pip install --upgrade pip
-    pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
-}
+# Install Python dependencies from requirements.txt
+echo -e "${GREEN}Installing Python libraries from requirements.txt...${NC}"
+if [ -f requirements.txt ]; then
+    pip install --no-warn-script-location -r requirements.txt || {
+        echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
+        pip install --upgrade pip
+        pip install --no-warn-script-location -r requirements.txt || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
+    }
+else
+    echo -e "${RED}requirements.txt not found! Installing dependencies directly...${NC}"
+    pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || {
+        echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
+        pip install --upgrade pip
+        pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
+    }
+fi
 
 # Clone the repository
 echo -e "${GREEN}Cloning repository...${NC}"
