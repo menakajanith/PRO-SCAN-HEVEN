@@ -1,26 +1,27 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+# Ensure Termux storage access
+termux-setup-storage
+
 # Update and upgrade Termux packages
 pkg update && pkg upgrade -y
 
-# Install curl, git, nmap, and python
+# Install system dependencies
 pkg install curl git nmap python -y
 
-# Check if requirements.txt exists and install dependencies
-REPO_DIR="pro-scan-heven"
-if [ -f "$REPO_DIR/requirements.txt" ]; then
-    echo "Installing Python dependencies from requirements.txt..."
-    pip install -r "$REPO_DIR/requirements.txt"
-else
-    echo "requirements.txt not found, installing individual packages..."
-    pip install requests dnspython python-nmap beautifulsoup4 reportlab cryptography rich websocket-client
-fi
+# Ensure pip is installed and up-to-date
+python -m ensurepip --upgrade
+python -m pip install --upgrade pip
+
+# Install all required Python packages explicitly
+echo "Installing Python dependencies..."
+python -m pip install requests dnspython python-nmap beautifulsoup4 reportlab cryptography rich websocket-client
 
 # Check if repository directory exists
+REPO_DIR="pro-scan-heven"
 if [ ! -d "$REPO_DIR" ]; then
-    # Define repository URL
-    REPO_URL="https://github.com/menakajanith/PRO-SCAN-HEVEN.git"
     # Clone the repository
+    REPO_URL="https://github.com/menakajanith/PRO-SCAN-HEVEN.git"
     git clone "$REPO_URL"
     if [ $? -eq 0 ]; then
         echo "Repository cloned successfully to $REPO_DIR"
@@ -37,7 +38,6 @@ cd "$REPO_DIR" || exit
 
 # Check if pro_scan_heven.py exists
 if [ -f "pro_scan_heven.py" ]; then
-    # Run the Python script
     echo "Running pro_scan_heven.py..."
     python pro_scan_heven.py
 else
