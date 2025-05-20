@@ -1,4 +1,5 @@
 requests
+dnspython
 python-nmap
 beautifulsoup4
 reportlab
