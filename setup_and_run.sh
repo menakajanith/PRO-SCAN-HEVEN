@@ -17,15 +17,23 @@ fi
 # Update Termux and install basic packages
 echo -e "${GREEN}Installing basic packages...${NC}"
 pkg update -y && pkg upgrade -y
-pkg install python git nmap tsu rust -y || { echo -e "${RED}Failed to install packages. Check package manager.${NC}"; exit 1; }
+pkg install python git nmap tsu rust clang -y || { echo -e "${RED}Failed to install packages. Check package manager.${NC}"; exit 1; }
 
 # Set up Rust environment
 echo -e "${GREEN}Setting up Rust environment...${NC}"
-export CARGO_BUILD_TARGET=$(rustc --print target-triple)
+export CARGO_BUILD_TARGET=aarch64-linux-android
+export RUSTFLAGS="-C linker=clang"
 source $HOME/.cargo/env 2>/dev/null || echo -e "${YELLOW}Rust environment not found, continuing...${NC}"
+
+# Create and activate virtual environment
+echo -e "${GREEN}Creating virtual environment...${NC}"
+cd $HOME
+python -m venv pro_scan_venv || { echo -e "${RED}Failed to create virtual environment.${NC}"; exit 1; }
+source pro_scan_venv/bin/activate || { echo -e "${RED}Failed to activate virtual environment.${NC}"; exit 1; }
 
 # Install Python dependencies from requirements.txt
 echo -e "${GREEN}Installing Python libraries from requirements.txt...${NC}"
+cd $HOME/PRO-SCAN-HEVEN
 if [ -f requirements.txt ]; then
     pip install --no-warn-script-location -r requirements.txt || {
         echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
@@ -34,10 +42,10 @@ if [ -f requirements.txt ]; then
     }
 else
     echo -e "${RED}requirements.txt not found! Installing dependencies directly...${NC}"
-    pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || {
+    pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography==43.0.3 rich websocket-client dnspython || {
         echo -e "${RED}Pip failed. Upgrading pip and retrying...${NC}"
         pip install --upgrade pip
-        pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography rich websocket-client dnspython || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
+        pip install --no-warn-script-location requests beautifulsoup4 python-nmap reportlab cryptography==43.0.3 rich websocket-client dnspython || { echo -e "${RED}Failed to install Python libraries.${NC}"; exit 1; }
     }
 fi
 
